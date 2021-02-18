@@ -27,7 +27,29 @@ app.post("/repositories", (request, response) => {
 });
 
 app.put("/repositories/:id", (request, response) => {
-  // TODO
+  const { id } = request.params;
+  const { title, url, techs } = request.body;
+
+  const repositoryIndex = repositories.findIndex(repository => repository.id === id);
+
+  if (repositoryIndex < 0) {
+      return response.status(400).json({ error: 'Project not found.' });
+  }
+
+  const repository = {
+    id: repositories[repositoryIndex].id, //This is redundant, cause if the user reaches this part of code,
+                                          //it means that the ID provided is valid and we are working on a
+                                          //specific repository that matches this ID
+    title,
+    url,
+    techs,
+    likes: repositories[repositoryIndex].likes, //Likes are not updatable through this route, so it needs to
+  };                                            //match the previous likes
+
+  repositories[repositoryIndex] = repository;
+
+  return response.json(repository);
+
 });
 
 app.delete("/repositories/:id", (request, response) => {
